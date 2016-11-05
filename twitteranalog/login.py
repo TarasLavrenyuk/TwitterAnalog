@@ -41,22 +41,32 @@ class Login:
                 con.close()
         return user_id
 
-        # inserted_date = str(request["date"])
-        # inserted_id = str(request["employee_id"])
-        #
-        # try:
-        #     con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
-        #     cur = con.cursor()
-        #     cur.execute("""INSERT INTO Visiting(employee_id, visit_date) VALUES (%s, %s);""", (inserted_id, inserted_date))
-        #     con.commit()
-        #
-        # except mydb.Error, e:
-        #
-        #     print "Error %d: %s" % (e.args[0],e.args[1])
-        #     sys.exit(1)
-        #
-        # finally:
-        #     if con:
-        #         con.close()
+    def sugnup(self, request):
+        if request.POST["password"] != request.POST["passwordr"]:
+            return
+
+        inserted_username = request.POST["username"]
+        inserted_password = request.POST["password"]
+        inserted_role = 'user'
+
+        print inserted_username
+        print inserted_password
+
+
+        try:
+            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            cur = con.cursor()
+            cur.execute("""INSERT INTO users(user_name, password, role) VALUES (%s, %s, %s);""",
+                        (inserted_username, inserted_password, inserted_role))
+            con.commit()
+
+        except mydb.Error, e:
+
+            print "Error %d: %s" % (e.args[0],e.args[1])
+            sys.exit(1)
+
+        finally:
+            if con:
+                con.close()
 
 

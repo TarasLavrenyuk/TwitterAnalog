@@ -22,3 +22,8 @@ def login(request):
 
 def reg(request):
     return render(request, 'reg.html')
+
+
+def signup(request):
+    result = lg.sugnup(request)
+    return HttpResponseRedirect('/')
