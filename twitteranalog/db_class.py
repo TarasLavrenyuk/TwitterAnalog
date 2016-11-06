@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 from bson.code import Code
+from datetime import date as date
 
 
 class SQL:
@@ -147,7 +148,7 @@ class Mongo:
                                                'last_name' : request.POST['lastName'],
                                                'email' : request.POST['email'],
                                                'info' : request.POST['info'],
-                                               'date_of_birthday' : request.POST['birthday'],
-                                               'country' : request.POST['birthday'],
+                                               'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
+                                               'country' : request.POST['country'],
                                          }})
 
