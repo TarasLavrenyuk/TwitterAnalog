@@ -26,7 +26,8 @@
             <form action="./signup" method="post">{% csrf_token %}
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="userEmail">Username </label>
+                        <label for="userEmail">Username</label>
+                        <label >  <font color="red">{{ message }}</font> </label>
                         <input type="text" class="form-control" required="" name="username" value="">
                         <span class="help-block">Your username is also used to log in.</span>
                     </div>

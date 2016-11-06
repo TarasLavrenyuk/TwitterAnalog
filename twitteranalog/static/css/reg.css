@@ -30,6 +30,9 @@
   position: relative;
   padding: 20px;
 }
+.error{
+  color: red;
+}
 .modal-footer {
   padding: 19px 20px 20px;
   margin-top: 0;
