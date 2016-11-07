@@ -31,6 +31,14 @@
                         <input type="text" class="form-control" required="" name="username" value="">
                         <span class="help-block">Your username is also used to log in.</span>
                     </div>
+                    <div class="form-group">
+                        <label for="userEmail">Select your country</label>
+                        <select id="selectbasic" name="country" class="form-control">
+                            {%  for country in countries %}
+                                <option value="{{ country.0 }}" >{{ country.1 }}</option>
+                            {% endfor %}
+                          </select>
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">

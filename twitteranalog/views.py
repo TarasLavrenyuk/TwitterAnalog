@@ -29,11 +29,11 @@ def profile(request):
     return render(request, 'profile.html', {'user_id' : id})
 
 def reg(request):
-    return render(request, 'reg.html')
+    return render(request, 'reg.html', {'countries' : sql.getCountries()})
 
 def signUp(request):
     if sql.canSignUp(request) == False:
-        return render(request, 'reg.html', {'message' : 'Such username is already exist'})
+        return render(request, 'reg.html', {'countries' : sql.getCountries(), 'message' : 'Such username is already exist'})
     sql.signUp(request)
     return HttpResponseRedirect('/')
 
@@ -50,4 +50,4 @@ def saveChanges(request):
 def settings(request):
     global userId
     print mongo.getUserInfo(userId)
-    return render(request, 'settings.html', {'countries' : sql.getCountries(), 'user' : mongo.getUserInfo(userId)})
+    return render(request, 'settings.html', {'user' : mongo.getUserInfo(userId)})

@@ -15,6 +15,7 @@ class SQL:
     password = '852456aaa'
     db_name = 'twitter'
 
+
     def isLogin(self, request):
         con = None
 
@@ -66,6 +67,7 @@ class SQL:
         inserted_username = request.POST["username"]
         inserted_password = request.POST["password"]
         inserted_role = 'user'
+        inserted_country = request.POST["country"]
 
         print inserted_username
         print inserted_password
@@ -74,8 +76,8 @@ class SQL:
             con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
 
-            cur.execute("""INSERT INTO users(user_name, password, role) VALUES (%s, %s, %s);""",
-                        (inserted_username, inserted_password, inserted_role))
+            cur.execute("""INSERT INTO users(user_name, password, role, country) VALUES (%s, %s, %s, %s);""",
+                        (inserted_username, inserted_password, inserted_role, inserted_country))
             con.commit()
 
         except mydb.Error, e:
@@ -100,7 +102,37 @@ class SQL:
         finally:
             if con:
                 con.close()
-        return result
+        return result[0][0]
+
+    def getUserContinent(self, id):
+        con = None
+        try:
+            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            cur = con.cursor()
+            cur.execute("""SELECT continent.id FROM users JOIN countries ON users.country=countries.id JOIN continent ON countries.continent_id=continent.id WHERE users.id=%s;""", str(id));
+            result = cur.fetchall()
+        except mydb.Error, e:
+            print "Error %d: %s" % (e.args[0],e.args[1])
+            sys.exit(1)
+        finally:
+            if con:
+                con.close()
+        return int(result)
+
+    def getUserCountry(self, id):
+        con = None
+        try:
+            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            cur = con.cursor()
+            cur.execute("""SELECT countries.name FROM users JOIN countries ON users.country=countries.id WHERE users.id=%s;""", id);
+            result = cur.fetchall()
+        except mydb.Error, e:
+            print "Error %d: %s" % (e.args[0],e.args[1])
+            sys.exit(1)
+        finally:
+            if con:
+                con.close()
+        return result[0][0]
 
     def getCountries(self):
         con = None
@@ -117,27 +149,34 @@ class SQL:
                 con.close()
         return countries
 
+
+
 class Mongo:
+    clients = [MongoClient('localhost', 27017)]
 
     def getUserInfo(self, id):
-        client = MongoClient('localhost', 27017)
-        db = client.twitter
-        users = db.users
-        for user in users.find().sort('id'):
-            if user['id'] == id:
-                return user
-        return 0
+        for client in Mongo.clients:
+            db = client.twitter
+            users = db.users
+            for user in users.find().sort('id'):
+                if user['id'] == id:
+                    return user
+            return 0
 
     def addUser(self, userId):
-        print userId
         sql = SQL()
-        username = sql.getUsername(userId)
+        # continent_id = sql.getUserContinent(userId)
+        # client = None
+        # if continent_id == 3 or continent_id == 4:
+        #     client = MongoClient('localhost', 27010) # AMERICA
+        # else:
+        #     client = MongoClient('localhost', 27011) # OtherWorld
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        users.insert_one({'id' : userId, 'username' : username, 'first_name' : '', 'last_name' : '','email' : '',
+        users.insert_one({'id' : userId, 'username' : sql.getUsername(userId), 'first_name' : '', 'last_name' : '','email' : '',
                           'photo' : '', 'info' : '', 'followers' : [], 'followings' : [], 'twits' : [],
-                          'date_of_birthday' : '', 'country' : ''})
+                          'date_of_birthday' : '', 'country' : sql.getUserCountry(userId)})
 
     def updateProfile(self, request, userId):
         client = MongoClient('localhost', 27017)
@@ -149,6 +188,5 @@ class Mongo:
                                                'email' : request.POST['email'],
                                                'info' : request.POST['info'],
                                                'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
-                                               'country' : request.POST['country'],
-                                         }})
+                                               }})
 
