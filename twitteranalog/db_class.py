@@ -1,13 +1,21 @@
 import sys
 import MySQLdb as mydb
-import xml.etree.ElementTree as ET
-import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 from bson.code import Code
 from datetime import date as date
+import re
 
+def getTags(string):
+    tags = []
+    words = string.split()
+    for word in words:
+        print word
+        if word[0] == '@':
+            word = " ".join(re.findall("@[a-zA-Z]+", word))
+            tags.append(word)
+    return tags
 
 class SQL:
     host = 'localhost'
@@ -149,8 +157,6 @@ class SQL:
                 con.close()
         return countries
 
-
-
 class Mongo:
     clients = [MongoClient('localhost', 27017)]
 
@@ -189,4 +195,3 @@ class Mongo:
                                                'info' : request.POST['info'],
                                                'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
                                                }})
-
