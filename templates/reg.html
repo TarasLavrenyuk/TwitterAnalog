@@ -33,9 +33,9 @@
                     </div>
                     <div class="form-group">
                         <label for="userEmail">Select your country</label>
-                        <select id="selectbasic" name="country" class="form-control">
-                            {%  for country in countries %}
-                                <option value="{{ country.0 }}" >{{ country.1 }}</option>
+                        <select id="selectbasic" name="continent" class="form-control">
+                            {%  for continent in continents %}
+                                <option value="{{ continent.0 }}" >{{ continent.1 }}</option>
                             {% endfor %}
                           </select>
                     </div>

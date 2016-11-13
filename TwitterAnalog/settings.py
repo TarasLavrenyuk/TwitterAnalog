@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'twitteranalog',
     'bootstrapform',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,8 +63,12 @@ WSGI_APPLICATION = 'TwitterAnalog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'twitter_users',
+        'ENGINE':'django.db.backends.mysql',
+        'USER': 'root',
+        'PASSWORD': '852456aaa',
+        'HOST': 'localhost',
+        'PORT': '8000'
     }
 }
 

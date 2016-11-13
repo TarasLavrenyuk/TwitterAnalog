@@ -157,20 +157,34 @@ class SQL:
                 con.close()
         return countries
 
+    def getContinents(self):
+        con = None
+        try:
+            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            cur = con.cursor()
+            cur.execute("""SELECT id, name FROM continent""")
+            continents = cur.fetchall()
+        except mydb.Error, e:
+            print "Error %d: %s" % (e.args[0],e.args[1])
+            sys.exit(1)
+        finally:
+            if con:
+                con.close()
+        return continents
+
 class Mongo:
     clients = [MongoClient('localhost', 27017)]
 
-    def getUserInfo(self, id):
+    def get_user_info(self, username):
         for client in Mongo.clients:
             db = client.twitter
             users = db.users
-            for user in users.find().sort('id'):
-                if user['id'] == id:
+            for user in users.find():
+                if user['username'] == username:
                     return user
-            return 0
 
-    def addUser(self, userId):
-        sql = SQL()
+    def add_user(self, username, continent):
+        # sql = SQL()
         # continent_id = sql.getUserContinent(userId)
         # client = None
         # if continent_id == 3 or continent_id == 4:
@@ -180,15 +194,15 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        users.insert_one({'id' : userId, 'username' : sql.getUsername(userId), 'first_name' : '', 'last_name' : '','email' : '',
+        users.insert_one({'username' : username, 'first_name' : '', 'last_name' : '','email' : '',
                           'photo' : '', 'info' : '', 'followers' : [], 'followings' : [], 'twits' : [],
-                          'date_of_birthday' : '', 'country' : sql.getUserCountry(userId)})
+                          'date_of_birthday' : '', 'continent' : continent})
 
-    def updateProfile(self, request, userId):
+    def update_profile(self, request, username):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        users.update({ 'id' : userId }, {'$set':
+        users.update({ 'username' : username }, {'$set':
                                              { 'first_name' : request.POST['firstName'] ,
                                                'last_name' : request.POST['lastName'],
                                                'email' : request.POST['email'],
