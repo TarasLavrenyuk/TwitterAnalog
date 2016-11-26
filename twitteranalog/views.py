@@ -5,15 +5,19 @@ from .db_class import Mongo
 from django.contrib.auth.models import User
 from models import Extra
 from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 
 sql = SQL()
 mongo = Mongo()
 
+
 def welcome(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('./my_profile')
     return render(request, 'login.html')
+
+
 
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
@@ -32,6 +36,7 @@ def my_profile(request):
     url = '/' + str(user_info['_id'])
     return HttpResponseRedirect(url)
 
+@login_required(redirect_field_name='/')
 def profile(request):
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
@@ -59,8 +64,7 @@ def settings(request):
     print request.user
     return render(request, 'settings.html', {'user' : mongo.get_user_info(request.user.get_username())})
 
-@login_required(redirect_field_name='/')
-def logout_view(request):
+def logout_action(request):
     logout(request)
     return HttpResponseRedirect('/')
 

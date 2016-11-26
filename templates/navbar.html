@@ -3,20 +3,28 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <form class="navbar-form navbar-left">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" placeholder="Search users">
                 </div>
                 <button type="submit" class="btn btn-default">Search</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
+                <form class="navbar-form navbar-left">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search twits">
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                </form>
+                <li role="separator" class="divider"></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Action<span class="caret"></span></a>
                     <ul class="dropdown-menu">
+                        <li><a href="./feed">Feed</a></li>
                         <li><a href="./add_twit_view">Add twit</a></li>
                         <li><a href="./my_profile">My profile</a></li>
                         <li><a href="./settings">Edit profile</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Log out</a></li>
+                        <li><a href="./logout">Log out</a></li>
                     </ul>
                 </li>
             </ul>
