@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 from bson.code import Code
-from datetime import date as date
+from datetime import date
 import re
 
 def getTags(string):
@@ -12,8 +12,8 @@ def getTags(string):
     words = string.split()
     for word in words:
         print word
-        if word[0] == '@':
-            word = " ".join(re.findall("@[a-zA-Z]+", word))
+        if word[0] == '#':
+            word = " ".join(re.findall("[a-zA-Z]+", word))
             tags.append(word)
     return tags
 
@@ -209,3 +209,18 @@ class Mongo:
                                                'info' : request.POST['info'],
                                                'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
                                                }})
+
+    def add_twit(self, username, header, content, file):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        posted_date = datetime.strptime(str(date.today()), '%Y-%m-%d')
+        tags = getTags(content)
+        twit = {'header' : header,
+                'content' : content,
+                'posted_date' : posted_date,
+                'liked' : [],
+                'tags' : tags
+                }
+        users.update({ 'username' : username }, {'$push': { 'twits': twit}})
+        pass

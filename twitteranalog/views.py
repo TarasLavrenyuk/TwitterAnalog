@@ -26,9 +26,15 @@ def sign_in(request):
     else:
         return HttpResponseRedirect('/')
 
+def my_profile(request):
+    username = request.user.get_username()
+    user_info = mongo.get_user_info(username)
+    url = '/' + str(user_info['_id'])
+    return HttpResponseRedirect(url)
+
 def profile(request):
     user_info = mongo.get_user_info(str(request.user))
-    print user_info
+    # print user_info
     return render(request, 'profile.html', {'user' : user_info})
 
 def reg(request): # view
@@ -57,3 +63,17 @@ def settings(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+@login_required(redirect_field_name='/')
+def add_twit_view(request):
+    return render(request, 'add_twit.html')
+
+@login_required(redirect_field_name='/')
+def add_twit_action(request):
+    print request.POST['header']
+    print request.POST['content']
+    print request.POST['file']
+    username = request.user.get_username()
+    print username
+    mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'])
+    return HttpResponseRedirect('./my_profile')
