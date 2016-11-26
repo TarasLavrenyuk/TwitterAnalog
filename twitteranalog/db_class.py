@@ -1,9 +1,7 @@
 import sys
 import MySQLdb as mydb
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 from datetime import datetime
-from bson.code import Code
 from datetime import date
 import re
 
@@ -225,6 +223,12 @@ class Mongo:
         for user in users.find({'first_name': re.compile(name, re.IGNORECASE)}):
             result.append(user)
         for user in users.find({'last_name': re.compile(name, re.IGNORECASE)}):
-            result.append(user)
-
+            if not self.isAlreadyInArray(user, result):
+                result.append(user)
         return result
+
+    def isAlreadyInArray(self, user, users):
+        for current_user in users:
+            if current_user['username'] == user['username']:
+                return True
+        return False

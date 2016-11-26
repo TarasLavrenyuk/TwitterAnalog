@@ -86,5 +86,4 @@ def add_twit_action(request):
 def user_search(request):
     name = request.GET['name']
     users = mongo.user_search(name)
-    print users
     return render(request, 'user_search.html', {'users' : users})
