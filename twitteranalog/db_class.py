@@ -184,13 +184,6 @@ class Mongo:
                     return user
 
     def add_user(self, username, continent):
-        # sql = SQL()
-        # continent_id = sql.getUserContinent(userId)
-        # client = None
-        # if continent_id == 3 or continent_id == 4:
-        #     client = MongoClient('localhost', 27010) # AMERICA
-        # else:
-        #     client = MongoClient('localhost', 27011) # OtherWorld
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users

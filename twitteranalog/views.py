@@ -34,8 +34,8 @@ def my_profile(request):
 
 def profile(request):
     user_info = mongo.get_user_info(str(request.user))
-    # print user_info
-    return render(request, 'profile.html', {'user' : user_info})
+    twits = reversed(user_info['twits'])
+    return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
 
 def reg(request): # view
     return render(request, 'reg.html', {'continents' : sql.getContinents()})

@@ -14,7 +14,8 @@
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <title>Title</title>
@@ -24,69 +25,66 @@
 {% include "./navbar.html" %}
 
 <div class="container">
-<form class="form-horizontal" action="saveChanges" method="post">{% csrf_token %}
-<fieldset>
+    <form class="form-horizontal" action="saveChanges" method="post">{% csrf_token %}
+        <fieldset>
 
-<!-- Form Name -->
-<legend> Profile settings </legend>
+            <!-- Form Name -->
+            <legend> Profile settings</legend>
 
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">First name</label>
-      <div class="col-md-4">
-      <input id="textinput" name="firstName" type="text" value="{{ user.first_name }}" class="form-control input-md">
-      </div>
-    </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">First name</label>
+                <div class="col-md-4">
+                    <input id="textinput" name="firstName" type="text" value="{{ user.first_name }}"
+                           class="form-control input-md">
+                </div>
+            </div>
 
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">Last name</label>
-      <div class="col-md-4">
-        <input id="lastName" name="lastName" type="text" value="{{ user.last_name }}" class="form-control input-md">
-      </div>
-    </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Last name</label>
+                <div class="col-md-4">
+                    <input id="lastName" name="lastName" type="text" value="{{ user.last_name }}"
+                           class="form-control input-md">
+                </div>
+            </div>
 
-    <!-- File Button -->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="filebutton">Avatar</label>
-      <div class="col-md-4">
-        <input id="filebutton" name="photo" class="input-file" type="file">
-      </div>
-    </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Birthday</label>
+                <div class="col-md-4">
+                    <input id="textinput" name="birthday" type="date" value="{{ user.date_of_birthday | date:"Y-m-d" }}"
+                           class="form-control input-md">
+                    <small class="form-text text-muted">year-month-day</small>
+                </div>
+            </div>
 
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">Birthday</label>
-      <div class="col-md-4">
-      <input id="textinput" name="birthday" type="date" value="{{ user.date_of_birthday | date:"Y-m-d" }}" class="form-control input-md">
-      </div>
-    </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Email</label>
+                <div class="col-md-4">
+                    <input id="textinput" name="email" type="text" value="{{ user.email }}"
+                           class="form-control input-md">
+                </div>
+            </div>
+            <!-- Select Basic -->
+            <!-- Textarea -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textarea">Info</label>
+                <div class="col-md-4">
+                    <textarea class="form-control" id="textarea" name="info"> {{ user.info }} </textarea>
+                </div>
+            </div>
 
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">Email</label>
-      <div class="col-md-4">
-      <input id="textinput" name="email" type="text" value="{{ user.email}}" class="form-control input-md">
-      </div>
-    </div>
-    <!-- Select Basic -->
-    <!-- Textarea -->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textarea">Info</label>
-      <div class="col-md-4">
-        <textarea class="form-control" id="textarea" name="info"> {{ user.info }} </textarea>
-      </div>
-    </div>
+            <!-- Button -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="singlebutton"></label>
+                <div class="col-md-4">
+                    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
 
-    <!-- Button -->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="singlebutton"></label>
-      <div class="col-md-4">
-        <button id="singlebutton" name="singlebutton" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-
-    </fieldset>
+        </fieldset>
     </form>
 
-    </div>
+</div>
 </body>
 </html>
