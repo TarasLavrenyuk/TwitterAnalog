@@ -12,6 +12,7 @@ urlpatterns = (
     url(r'^add_twit_action$', views.add_twit_action, name='add_twit_action'),
     url(r'^my_profile$', views.my_profile, name='profile'),
     url(r'^logout$', views.logout_action, name='logout'),
+    url(r'^user_search$', views.user_search, name='user_search'),
     url(r'^.{0,}$', views.profile, name='name'),
 
 )

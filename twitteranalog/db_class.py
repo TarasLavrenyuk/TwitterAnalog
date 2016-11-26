@@ -173,15 +173,14 @@ class SQL:
         return continents
 
 class Mongo:
-    clients = [MongoClient('localhost', 27017)]
 
     def get_user_info(self, username):
-        for client in Mongo.clients:
-            db = client.twitter
-            users = db.users
-            for user in users.find():
-                if user['username'] == username:
-                    return user
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if user['username'] == username:
+                return user
 
     def add_user(self, username, continent):
         client = MongoClient('localhost', 27017)
@@ -217,3 +216,15 @@ class Mongo:
                 }
         users.update({ 'username' : username }, {'$push': { 'twits': twit}})
         pass
+
+    def user_search(self, name):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find({'first_name': re.compile(name, re.IGNORECASE)}):
+            result.append(user)
+        for user in users.find({'last_name': re.compile(name, re.IGNORECASE)}):
+            result.append(user)
+
+        return result

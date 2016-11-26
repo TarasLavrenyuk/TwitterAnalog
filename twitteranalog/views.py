@@ -81,3 +81,10 @@ def add_twit_action(request):
     print username
     mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'])
     return HttpResponseRedirect('./my_profile')
+
+@login_required()
+def user_search(request):
+    name = request.GET['name']
+    users = mongo.user_search(name)
+    print users
+    return render(request, 'user_search.html', {'users' : users})
