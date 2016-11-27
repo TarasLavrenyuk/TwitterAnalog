@@ -288,3 +288,25 @@ class Mongo:
         for u in users.find():
             if u['username'] == user:
                 users.update_one({ 'username' : user }, {'$pull': { 'followers': logged_user}})
+
+    def get_user_followers(self, username):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if username == user['username']:
+                for follower in user['followers']:
+                    result.append(self.get_user_info(follower))
+        return result
+
+    def get_user_followings(self, username):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if username == user['username']:
+                for following in user['followings']:
+                    result.append(self.get_user_info(following))
+        return result

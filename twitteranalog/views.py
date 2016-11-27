@@ -19,8 +19,6 @@ def welcome(request):
         return HttpResponseRedirect('./my_profile')
     return render(request, 'login.html')
 
-
-
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
     if user is not None:
@@ -58,7 +56,6 @@ def profile(request):
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
     return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username})
-
 
 def reg(request): # view
     return render(request, 'reg.html', {'continents' : sql.getContinents()})
@@ -115,8 +112,21 @@ def unfollow(request):
     mongo.unfollow(request.user.get_username(), request.GET['user'])
     return HttpResponseRedirect(request.GET['user'])
 
-
 def follow(request):
     print request.GET['user']
     mongo.follow(request.user.get_username(), request.GET['user'])
     return HttpResponseRedirect(request.GET['user'])
+
+def view_followers(request):
+    print request.path
+    username = str(request.path).split("=", 1)[1]
+    users = mongo.get_user_followers(username)
+    return render(request, 'users.html', {'users' : users,
+                                          'header' : username + ' followers'})
+
+def view_followings(request):
+    print request.path
+    username = str(request.path).split("=", 1)[1]
+    users = mongo.get_user_followings(username)
+    return render(request, 'users.html', {'users' : users,
+                                          'header' : username + ' followings'})

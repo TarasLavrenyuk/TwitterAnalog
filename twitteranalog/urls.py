@@ -16,6 +16,8 @@ urlpatterns = (
     url(r'^twit_search$', views.twit_search, name='twit_search'),
     url(r'^unfollow$', views.unfollow, name='unfollow'),
     url(r'^follow$', views.follow, name='follow'),
+    url(r'^followers=.{0,}', views.view_followers, name='view_followers'),
+    url(r'^followings=.{0,}$', views.view_followings, name='view_followings'),
     url(r'^.{0,}$', views.profile, name='name'),
 
 )
