@@ -30,10 +30,13 @@
     <div class="row">
         {% for twit in twits %}{% csrf_token %}
             <div class="bs-callout bs-callout-danger">
-                <h4> <a href="{{ twit.id }}" > {{ twit.header }} </a> </h4>
-                <p>
-                    {{ twit.content }}
-                </p>
+                <div class="header">
+                    <h1>
+                        <a href="{{ twit.author }}"><small>@{{ twit.author }}</small></a>
+                    </h1>
+                </div>
+                <h4>{{ twit.header }}</h4>
+                <p>{{ twit.content }}</p>
                 <a href="./like"><img src="{% static 'picture/like.png' %}" alt="Mountain View"
                                       style="width:15px;height:15px;"></a>
                 <label>{{ twit.liked|length }}</label>

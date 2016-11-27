@@ -19,6 +19,8 @@ def welcome(request):
         return HttpResponseRedirect('./my_profile')
     return render(request, 'login.html')
 
+
+
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
     if user is not None:
@@ -41,10 +43,10 @@ def profile(request):
     current_username = request.user.get_username()
     line = request.path_info
     id = re.sub('[/]', '', line)
-    user_info = mongo.get_userinfo_by_twit_id(id)
-    if user_info:
-        url = '/' + str(user_info['_id'])
-        return HttpResponseRedirect(url)
+    # user_info = mongo.get_userinfo_by_twit_id(id)
+    # if user_info:
+    #     url = '/' + str(user_info['_id'])
+    #     return HttpResponseRedirect(url)
     user_info = mongo.get_user_info_by_id(id)
     if user_info:
         twits = reversed(user_info['twits'])
@@ -104,6 +106,8 @@ def user_search(request):
 def twit_search(request):
     hashtag = request.GET['hashtag']
     twits = mongo.twits_search(hashtag)
+    for twit in twits:
+        print twit['author']
     header = 'Search by "' + hashtag + '"'
     return render(request, 'twits.html', {'twits' : twits, 'header' : header})
 
@@ -122,11 +126,11 @@ def view_followers(request):
     username = str(request.path).split("=", 1)[1]
     users = mongo.get_user_followers(username)
     return render(request, 'users.html', {'users' : users,
-                                          'header' : username + ' followers'})
+                                          'header' : '@' + username + ' followers'})
 
 def view_followings(request):
     print request.path
     username = str(request.path).split("=", 1)[1]
     users = mongo.get_user_followings(username)
     return render(request, 'users.html', {'users' : users,
-                                          'header' : username + ' followings'})
+                                          'header' : '@' + username + ' followings'})

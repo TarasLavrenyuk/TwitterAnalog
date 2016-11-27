@@ -244,6 +244,7 @@ class Mongo:
         for user in users.find():
             for twit in user['twits']:
                 if hashtag in twit['tags']:
+                    twit['author'] = user['username']
                     result.append(twit)
         return result
 
