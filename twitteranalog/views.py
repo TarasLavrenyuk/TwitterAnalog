@@ -134,3 +134,9 @@ def view_followings(request):
     users = mongo.get_user_followings(username)
     return render(request, 'users.html', {'users' : users,
                                           'header' : '@' + username + ' followings'})
+
+def feed(request):
+    username = request.user.get_username()
+    twits = mongo.feed(username)
+    header = '@' + username + ' feed'
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header})

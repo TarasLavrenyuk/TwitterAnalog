@@ -5,6 +5,8 @@ from datetime import datetime
 from datetime import date
 import re
 import uuid
+from operator import itemgetter
+
 
 def getTags(string):
     tags = []
@@ -205,7 +207,8 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        posted_date = datetime.strptime(str(date.today()), '%Y-%m-%d')
+        # posted_date = datetime.strptime(str(datetime.now()))
+        posted_date = datetime.strptime(str(datetime.now().strftime("%Y-%m-%d %H:%M")), '%Y-%m-%d %H:%M')
         tags = getTags(content)
         id = uuid.uuid1()
         twit = {'id': id,
@@ -246,6 +249,7 @@ class Mongo:
                 if hashtag in twit['tags']:
                     twit['author'] = user['username']
                     result.append(twit)
+        result = sorted(result, key=itemgetter('posted_date'), reverse=True)
         return result
 
     def get_userinfo_by_twit_id(self, id):
@@ -310,4 +314,20 @@ class Mongo:
             if username == user['username']:
                 for following in user['followings']:
                     result.append(self.get_user_info(following))
+        return result
+
+    def feed(self, username):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if user['username'] == username:
+                for following in user['followings']:
+                    current_following = self.get_user_info(following)
+                    print current_following
+                    for twit in current_following['twits']:
+                        twit['author'] = current_following['username']
+                        result.append(twit)
+        result = sorted(result, key=itemgetter('posted_date'), reverse=True)
         return result
