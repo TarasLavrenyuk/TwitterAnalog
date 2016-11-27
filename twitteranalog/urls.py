@@ -13,6 +13,7 @@ urlpatterns = (
     url(r'^my_profile$', views.my_profile, name='profile'),
     url(r'^logout$', views.logout_action, name='logout'),
     url(r'^user_search$', views.user_search, name='user_search'),
+    url(r'^twit_search$', views.twit_search, name='twit_search'),
     url(r'^.{0,}$', views.profile, name='name'),
 
 )

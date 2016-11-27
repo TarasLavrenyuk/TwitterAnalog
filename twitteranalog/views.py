@@ -74,11 +74,8 @@ def add_twit_view(request):
 
 @login_required(redirect_field_name='/')
 def add_twit_action(request):
-    print request.POST['header']
-    print request.POST['content']
-    print request.POST['file']
+    # print request._get_files
     username = request.user.get_username()
-    print username
     mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'])
     return HttpResponseRedirect('./my_profile')
 
@@ -86,4 +83,11 @@ def add_twit_action(request):
 def user_search(request):
     name = request.GET['name']
     users = mongo.user_search(name)
-    return render(request, 'user_search.html', {'users' : users})
+    return render(request, 'users.html', {'users' : users,
+                                          'header' : 'Search by "' + name +'"'})
+
+
+def twit_search(request):
+    hashtag = request.GET['hashtag']
+    twits = mongo.twits_search(hashtag)
+    return render(request, 'users.html', {'twits' : twits})

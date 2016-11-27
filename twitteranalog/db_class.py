@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from datetime import date
 import re
+import uuid
 
 def getTags(string):
     tags = []
@@ -206,7 +207,9 @@ class Mongo:
         users = db.users
         posted_date = datetime.strptime(str(date.today()), '%Y-%m-%d')
         tags = getTags(content)
-        twit = {'header' : header,
+        id = uuid.uuid1()
+        twit = {'id': id,
+                'header' : header,
                 'content' : content,
                 'posted_date' : posted_date,
                 'liked' : [],
@@ -232,3 +235,24 @@ class Mongo:
             if current_user['username'] == user['username']:
                 return True
         return False
+
+    def twits_search(self, hashtag):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            for twit in user['twits']:
+                if hashtag in twit['tags']:
+                    result.append(twit)
+        return result
+
+    def get_username_by_twit_id(self, id):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            for twit in user['twits']:
+                if id in twit['id']:
+                    return user['username']

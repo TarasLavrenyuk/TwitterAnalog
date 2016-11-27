@@ -3,8 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-{#    <link rel="stylesheet" type="text/css" href="{% static 'css/user_search.css' %}"/>#}
-{#    <script type="text/javascript" href="{% static 'js/user_search.js' %}"></script>#}
+    {#    <link rel="stylesheet" type="text/css" href="{% static 'css/user_search.css' %}"/>#}
+    {#    <script type="text/javascript" href="{% static 'js/user_search.js' %}"></script>#}
     <link rel="stylesheet" type='text/css' href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -19,13 +19,16 @@
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <title>Search</title>
+    <title>Users</title>
 </head>
 <body>
 
 {% include "./navbar.html" %}
 
-<br><br>
+<div class="page-header">
+    <h1 align="center"> {{ header }} </h1>
+</div>
+{#<br><br>#}
 <div class="container">
     <div class="well span8 offset2">
         {% for user in users %}{% csrf_token %}
@@ -51,7 +54,11 @@
                                             <td>{{ user.username }}</td>
                                         </tr>
                                         <tr>
-                                            <td>Birthdat:</td>
+                                            <td>Twits:</td>
+                                            <td>{{ user.twits|length }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Birthday:</td>
                                             <td>{{ user.date_of_birthday | date:"Y-m-d" }}</td>
                                         </tr>
                                         <tr>
