@@ -263,3 +263,28 @@ class Mongo:
         for user in users.find():
             if str(id) == str(user['_id']):
                 return user
+
+    def follow(self, logged_user, user):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        print 'i am here'
+        for u in users.find():
+            if u['username'] == logged_user:
+                print 'find logged user'
+                users.update_one({ 'username' : logged_user }, {'$push': { 'followings': user}})
+        for u in users.find():
+            if u['username'] == user:
+                print 'find unlogged user'
+                users.update_one({ 'username' : user }, {'$push': { 'followers': logged_user}})
+
+    def unfollow(self, logged_user, user):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for u in users.find():
+            if u['username'] == logged_user:
+                users.update_one({ 'username' : logged_user }, {'$pull': { 'followings': user}})
+        for u in users.find():
+            if u['username'] == user:
+                users.update_one({ 'username' : user }, {'$pull': { 'followers': logged_user}})

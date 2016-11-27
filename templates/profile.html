@@ -61,16 +61,16 @@
                                     {% if current != user.username %}
                                         {% if current in user.followers %}
                                             <li class="list-group-item">
-                                                <a href="./unfollow">
-                                                    <img src="{% static 'picture/unfollow.png' %}" style="height: 30px">
-                                                </a>
+                                                <form action="./unfollow" method="get"> {% csrf_token %}
+                                                    <button type="submit" name="user" value="{{ user.username }}" class="btn btn-default">Unfollow</button>
+                                                </form>
                                             </li>
                                         {% endif %}
                                         {% if current not in user.followers %}
                                             <li class="list-group-item">
-                                                <a href="./follow">
-                                                    <img src="{% static 'picture/follow.png' %}" style="height: 30px">
-                                                </a>
+                                                <form action="./follow" method="get"> {% csrf_token %}
+                                                    <button type="submit" name="user" value="{{ user.username }}" class="btn btn-default">Follow</button>
+                                                </form>
                                             </li>
                                         {% endif %}
                                     {% endif %}

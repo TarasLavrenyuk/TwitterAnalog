@@ -109,3 +109,14 @@ def twit_search(request):
     twits = mongo.twits_search(hashtag)
     header = 'Search by "' + hashtag + '"'
     return render(request, 'twits.html', {'twits' : twits, 'header' : header})
+
+def unfollow(request):
+    print request.GET['user']
+    mongo.unfollow(request.user.get_username(), request.GET['user'])
+    return HttpResponseRedirect(request.GET['user'])
+
+
+def follow(request):
+    print request.GET['user']
+    mongo.follow(request.user.get_username(), request.GET['user'])
+    return HttpResponseRedirect(request.GET['user'])
