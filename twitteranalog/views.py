@@ -7,6 +7,8 @@ from models import Extra
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+import uuid
+import re
 
 sql = SQL()
 mongo = Mongo()
@@ -38,6 +40,20 @@ def my_profile(request):
 
 @login_required(redirect_field_name='/')
 def profile(request):
+    line = request.path_info
+    id = re.sub('[/]', '', line)
+    user_info = mongo.get_userinfo_by_twit_id(id)
+    print user_info
+    if user_info:
+        # print user_info['username']
+        # twits = reversed(user_info['twits'])
+        # return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
+        url = '/' + str(user_info['_id'])
+        return HttpResponseRedirect(url)
+    user_info = mongo.get_user_info_by_id(id)
+    if user_info:
+        twits = reversed(user_info['twits'])
+        return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
     return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
@@ -86,8 +102,8 @@ def user_search(request):
     return render(request, 'users.html', {'users' : users,
                                           'header' : 'Search by "' + name +'"'})
 
-
 def twit_search(request):
     hashtag = request.GET['hashtag']
     twits = mongo.twits_search(hashtag)
-    return render(request, 'users.html', {'twits' : twits})
+    header = 'Search by "' + hashtag + '"'
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header})

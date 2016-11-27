@@ -247,12 +247,19 @@ class Mongo:
                     result.append(twit)
         return result
 
-    def get_username_by_twit_id(self, id):
-        result = []
+    def get_userinfo_by_twit_id(self, id):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
         for user in users.find():
             for twit in user['twits']:
-                if id in twit['id']:
-                    return user['username']
+                if str(id) == str(twit['id']):
+                    return user
+
+    def get_user_info_by_id(self, id):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if str(id) == str(user['_id']):
+                return user
