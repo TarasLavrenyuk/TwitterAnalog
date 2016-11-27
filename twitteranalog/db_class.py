@@ -229,11 +229,11 @@ class Mongo:
         for user in users.find({'first_name': re.compile(name, re.IGNORECASE)}):
             result.append(user)
         for user in users.find({'last_name': re.compile(name, re.IGNORECASE)}):
-            if not self.isAlreadyInArray(user, result):
+            if not self.is_already_in_array(user, result):
                 result.append(user)
         return result
 
-    def isAlreadyInArray(self, user, users):
+    def is_already_in_array(self, user, users):
         for current_user in users:
             if current_user['username'] == user['username']:
                 return True
@@ -331,3 +331,18 @@ class Mongo:
                         result.append(twit)
         result = sorted(result, key=itemgetter('posted_date'), reverse=True)
         return result
+
+    def like(self, twit_id, username):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            for twit in user['twits']:
+                if str(twit_id) == str(twit['id']):
+                    if username in twit['liked']:
+                        print 'dislike'
+                        users.update({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$pull': { 'twits.$.liked': username }})
+                    else:
+                        print 'like'
+                        users.update_one({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$push': { 'twits.$.liked': username }})
+

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .db_class import SQL
 from .db_class import Mongo
 from django.contrib.auth.models import User
@@ -50,14 +50,14 @@ def profile(request):
     user_info = mongo.get_user_info_by_id(id)
     if user_info:
         twits = reversed(user_info['twits'])
-        return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username})
+        return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username, 'return_url' : request.path})
     user_info = mongo.get_user_info(id)
     if user_info:
         url = '/' + str(user_info['_id'])
         return HttpResponseRedirect(url)
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
-    return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username})
+    return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username, 'return_url' : request.path})
 
 def reg(request): # view
     return render(request, 'reg.html', {'continents' : sql.getContinents()})
@@ -109,7 +109,7 @@ def twit_search(request):
     for twit in twits:
         print twit['author']
     header = 'Search by "' + hashtag + '"'
-    return render(request, 'twits.html', {'twits' : twits, 'header' : header})
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.path})
 
 def unfollow(request):
     print request.GET['user']
@@ -139,4 +139,12 @@ def feed(request):
     username = request.user.get_username()
     twits = mongo.feed(username)
     header = '@' + username + ' feed'
-    return render(request, 'twits.html', {'twits' : twits, 'header' : header})
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.path})
+
+def like(request):
+    print request.path
+    # print request.REQUEST['return_url']
+    twit_id = re.sub('/like=', '', request.path_info)
+    print twit_id
+    mongo.like(twit_id, request.user.get_username())
+    return HttpResponseRedirect(request.GET['return_url'])
