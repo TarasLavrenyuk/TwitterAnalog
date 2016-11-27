@@ -46,7 +46,10 @@
                                          alt="User Pic">
                                 </div>
                                 <div class="span6">
-                                    <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
+                                    <strong>
+                                        <a href="{{ user.username }}" >{{ user.first_name }} {{ user.last_name }}</a>
+                                    </strong>
+{#                                    <br>#}
                                     <table class="table table-condensed table-responsive table-user-information">
                                         <tbody>
                                         <tr>

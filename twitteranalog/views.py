@@ -40,23 +40,25 @@ def my_profile(request):
 
 @login_required(redirect_field_name='/')
 def profile(request):
+    current_username = request.user.get_username()
     line = request.path_info
     id = re.sub('[/]', '', line)
     user_info = mongo.get_userinfo_by_twit_id(id)
-    print user_info
     if user_info:
-        # print user_info['username']
-        # twits = reversed(user_info['twits'])
-        # return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
         url = '/' + str(user_info['_id'])
         return HttpResponseRedirect(url)
     user_info = mongo.get_user_info_by_id(id)
     if user_info:
         twits = reversed(user_info['twits'])
-        return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
+        return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username})
+    user_info = mongo.get_user_info(id)
+    if user_info:
+        url = '/' + str(user_info['_id'])
+        return HttpResponseRedirect(url)
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
-    return render(request, 'profile.html', {'user' : user_info, 'twits' : twits})
+    return render(request, 'profile.html', {'user' : user_info, 'twits' : twits, 'current' : current_username})
+
 
 def reg(request): # view
     return render(request, 'reg.html', {'continents' : sql.getContinents()})
