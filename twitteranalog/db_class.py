@@ -2,11 +2,13 @@ import sys
 import MySQLdb as mydb
 from pymongo import MongoClient
 from datetime import datetime
-from datetime import date
 import re
 import uuid
 from operator import itemgetter
+import redis
+import pickle
 
+red = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 def getTags(string):
     tags = []
@@ -195,13 +197,38 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
+        user = users.find_one({ 'username' : username })
         users.update({ 'username' : username }, {'$set':
-                                             { 'first_name' : request.POST['firstName'] ,
+                                             { 'first_name' : request.POST['firstName'],
                                                'last_name' : request.POST['lastName'],
                                                'email' : request.POST['email'],
                                                'info' : request.POST['info'],
                                                'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
                                                }})
+        new_first_name = request.POST['firstName']
+        new_last_name = request.POST['lastName']
+        prev_first_name = user.get('first_name')
+        prev_last_name = user.get('last_name')
+        hash_data = red.hgetall('users')
+        print hash_data
+        print 'lol'
+        if hash_data:
+            keys = hash_data.keys()
+            for key in keys:
+                if prev_first_name != new_first_name:
+                    if str(key).lower() == str(new_first_name).lower():
+                        print 'It works'
+                        red.hdel('users', key)
+                    if str(key).lower() == str(prev_first_name).lower():
+                        print 'It works'
+                        red.hdel('users', key)
+                if prev_last_name != new_last_name:
+                    if str(key).lower() == str(new_last_name).lower():
+                        print 'It works'
+                        red.hdel('users', key)
+                    if str(key).lower() == str(prev_last_name).lower():
+                        print 'It works'
+                        red.hdel('users', key)
 
     def add_twit(self, username, header, content, file):
         client = MongoClient('localhost', 27017)
@@ -222,6 +249,10 @@ class Mongo:
         pass
 
     def user_search(self, name):
+        data = red.hget('users', name)
+        if data:
+            print 'loaded from cache'
+            return pickle.loads(data)
         result = []
         client = MongoClient('localhost', 27017)
         db = client.twitter
@@ -231,6 +262,8 @@ class Mongo:
         for user in users.find({'last_name': re.compile(name, re.IGNORECASE)}):
             if not self.is_already_in_array(user, result):
                 result.append(user)
+        print 'loaded from mongo'
+        red.hset('users', name, pickle.dumps(result))
         return result
 
     def is_already_in_array(self, user, users):

@@ -19,8 +19,6 @@ def welcome(request):
         return HttpResponseRedirect('./my_profile')
     return render(request, 'login.html')
 
-
-
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
     if user is not None:
@@ -91,6 +89,7 @@ def add_twit_view(request):
 
 @login_required(redirect_field_name='/')
 def add_twit_action(request):
+    # print 'File:'
     # print request._get_files
     username = request.user.get_username()
     mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'])
@@ -104,12 +103,12 @@ def user_search(request):
                                           'header' : 'Search by "' + name +'"'})
 
 def twit_search(request):
-    hashtag = request.GET['hashtag']
+    hashtag = request.REQUEST['hashtag']
     twits = mongo.twits_search(hashtag)
     for twit in twits:
         print twit['author']
     header = 'Search by "' + hashtag + '"'
-    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.path})
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.get_full_path()})
 
 def unfollow(request):
     print request.GET['user']
@@ -139,7 +138,7 @@ def feed(request):
     username = request.user.get_username()
     twits = mongo.feed(username)
     header = '@' + username + ' feed'
-    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.path})
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.get_full_path()})
 
 def like(request):
     print request.path
