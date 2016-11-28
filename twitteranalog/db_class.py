@@ -210,31 +210,28 @@ class Mongo:
         prev_first_name = user.get('first_name')
         prev_last_name = user.get('last_name')
         hash_data = red.hgetall('users')
-        print hash_data
-        print 'lol'
         if hash_data:
             keys = hash_data.keys()
             for key in keys:
                 if prev_first_name != new_first_name:
                     if str(key).lower() == str(new_first_name).lower():
-                        print 'It works'
+                        print 'Clear "users" redis'
                         red.hdel('users', key)
                     if str(key).lower() == str(prev_first_name).lower():
-                        print 'It works'
+                        print 'Clear "users" redis'
                         red.hdel('users', key)
                 if prev_last_name != new_last_name:
                     if str(key).lower() == str(new_last_name).lower():
-                        print 'It works'
+                        print 'Clear "users" redis'
                         red.hdel('users', key)
                     if str(key).lower() == str(prev_last_name).lower():
-                        print 'It works'
+                        print 'Clear "users" redis'
                         red.hdel('users', key)
 
     def add_twit(self, username, header, content, file):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        # posted_date = datetime.strptime(str(datetime.now()))
         posted_date = datetime.strptime(str(datetime.now().strftime("%Y-%m-%d %H:%M")), '%Y-%m-%d %H:%M')
         tags = getTags(content)
         id = uuid.uuid1()
@@ -246,7 +243,15 @@ class Mongo:
                 'tags' : tags
                 }
         users.update({ 'username' : username }, {'$push': { 'twits': twit}})
-        pass
+
+        hash_data = red.hgetall('twits')
+        print hash_data
+        if hash_data:
+            keys = hash_data.keys()
+            for key in keys:
+                if key in tags:
+                    print 'Clear "twits" redis'
+                    red.hdel('twits', key)
 
     def user_search(self, name):
         data = red.hget('users', name)
@@ -273,6 +278,10 @@ class Mongo:
         return False
 
     def twits_search(self, hashtag):
+        data = red.hget('twits', hashtag)
+        if data:
+            print 'loaded from cache'
+            return pickle.loads(data)
         result = []
         client = MongoClient('localhost', 27017)
         db = client.twitter
@@ -283,6 +292,8 @@ class Mongo:
                     twit['author'] = user['username']
                     result.append(twit)
         result = sorted(result, key=itemgetter('posted_date'), reverse=True)
+        print 'loaded from mongo'
+        red.hset('twits', hashtag, pickle.dumps(result))
         return result
 
     def get_userinfo_by_twit_id(self, id):
@@ -365,6 +376,15 @@ class Mongo:
         result = sorted(result, key=itemgetter('posted_date'), reverse=True)
         return result
 
+    def get_twit_tags_by_id(self, twit_id):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            for twit in user['twits']:
+                if str(twit_id) == str(twit['id']):
+                    return twit['tags']
+
     def like(self, twit_id, username):
         client = MongoClient('localhost', 27017)
         db = client.twitter
@@ -373,9 +393,15 @@ class Mongo:
             for twit in user['twits']:
                 if str(twit_id) == str(twit['id']):
                     if username in twit['liked']:
-                        print 'dislike'
                         users.update({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$pull': { 'twits.$.liked': username }})
                     else:
-                        print 'like'
                         users.update_one({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$push': { 'twits.$.liked': username }})
 
+        hash_data = red.hgetall('twits')
+        print hash_data
+        if hash_data:
+            keys = hash_data.keys()
+            for key in keys:
+                if key in self.get_twit_tags_by_id(twit_id):
+                    print 'Clear "twits" redis'
+                    red.hdel('twits', key)

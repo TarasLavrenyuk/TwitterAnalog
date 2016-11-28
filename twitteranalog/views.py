@@ -105,8 +105,6 @@ def user_search(request):
 def twit_search(request):
     hashtag = request.REQUEST['hashtag']
     twits = mongo.twits_search(hashtag)
-    for twit in twits:
-        print twit['author']
     header = 'Search by "' + hashtag + '"'
     return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.get_full_path()})
 
