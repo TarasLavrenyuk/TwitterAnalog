@@ -24,7 +24,8 @@
     <form method="post" action="./add_twit_action">{% csrf_token %}
         <div class="form-group">
             <label for="exampleInputEmail1">Twit`s header:</label>
-            <input name="header" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="header">
+            <input name="header" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                   placeholder="header">
         </div>
         <div class="form-group">
             <label for="exampleTextarea">Twit`s plot:</label>
@@ -33,6 +34,9 @@
         <div class="form-group">
             <label for="exampleInputFile">Add file:</label>
             <input name="file" type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+        </div>
+        <div class="checkbox">
+            <label><input name="is_hide" type="checkbox">Only for followers</label>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

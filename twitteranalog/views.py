@@ -91,8 +91,11 @@ def add_twit_view(request):
 def add_twit_action(request):
     # print 'File:'
     # print request._get_files
+    hide = 0
+    if request.POST.get('is_hide'):
+        hide = 1
     username = request.user.get_username()
-    mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'])
+    mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'], hide)
     return HttpResponseRedirect('./my_profile')
 
 @login_required()
@@ -106,7 +109,9 @@ def twit_search(request):
     hashtag = request.REQUEST['hashtag']
     twits = mongo.twits_search(hashtag)
     header = 'Search by "' + hashtag + '"'
-    return render(request, 'twits.html', {'twits' : twits, 'header' : header, 'return_url' : request.get_full_path()})
+    followings = mongo.get_user_followings_usernames(request.user.get_username())
+    return render(request, 'twits.html', {'twits' : twits, 'header' : header,
+                                          'return_url' : request.get_full_path(), 'followings' : followings})
 
 def unfollow(request):
     print request.GET['user']

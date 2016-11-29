@@ -228,7 +228,7 @@ class Mongo:
                         print 'Clear "users" redis'
                         red.hdel('users', key)
 
-    def add_twit(self, username, header, content, file):
+    def add_twit(self, username, header, content, file, hide):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
@@ -240,7 +240,8 @@ class Mongo:
                 'content' : content,
                 'posted_date' : posted_date,
                 'liked' : [],
-                'tags' : tags
+                'tags' : tags,
+                'hide' : hide
                 }
         users.update({ 'username' : username }, {'$push': { 'twits': twit}})
 
@@ -358,6 +359,17 @@ class Mongo:
             if username == user['username']:
                 for following in user['followings']:
                     result.append(self.get_user_info(following))
+        return result
+
+    def get_user_followings_usernames(self, username):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        for user in users.find():
+            if username == user['username']:
+                for following in user['followings']:
+                    result.append(self.get_user_info(following)['username'])
         return result
 
     def feed(self, username):

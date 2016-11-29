@@ -62,14 +62,18 @@
                                         {% if current in user.followers %}
                                             <li class="list-group-item">
                                                 <form action="./unfollow" method="get"> {% csrf_token %}
-                                                    <button type="submit" name="user" value="{{ user.username }}" class="btn btn-default">Unfollow</button>
+                                                    <button type="submit" name="user" value="{{ user.username }}"
+                                                            class="btn btn-default">Unfollow
+                                                    </button>
                                                 </form>
                                             </li>
                                         {% endif %}
                                         {% if current not in user.followers %}
                                             <li class="list-group-item">
                                                 <form action="./follow" method="get"> {% csrf_token %}
-                                                    <button type="submit" name="user" value="{{ user.username }}" class="btn btn-default">Follow</button>
+                                                    <button type="submit" name="user" value="{{ user.username }}"
+                                                            class="btn btn-default">Follow
+                                                    </button>
                                                 </form>
                                             </li>
                                         {% endif %}
@@ -80,15 +84,50 @@
                     </div>
                 </div>
                 {% for twit in twits %}{% csrf_token %}
-                    <div class="bs-callout bs-callout-danger">
-                        <h4> {{ twit.header }} </h4>
-                        <p>
-                            {{ twit.content }}
-                        </p>
-                        <a href="./like={{ twit.id }}?return_url={{ return_url }}?param=param"><img src="{% static 'picture/like.png' %}" alt="Mountain View"
-                                              style="width:15px;height:15px;"></a>
-                        <label>{{ twit.liked|length }}</label>
-                    </div>
+                    {% if current == user.username %}
+                        <div class="bs-callout bs-callout-danger">
+                            <h4>
+                                {{ twit.header }}
+                            </h4>
+                            <p>
+                                {{ twit.content }}
+                            </p>
+                            <a href="./like={{ twit.id }}?return_url={{ return_url }}?param=param"><img
+                                    src="{% static 'picture/like.png' %}" alt="Mountain View"
+                                    style="width:15px;height:15px;"></a>
+                            <label>{{ twit.liked|length }}</label>
+                        </div>
+                    {% endif %}
+                    {% if current != user.username %}
+                        {% if twit.hide == 0 %}
+                            <div class="bs-callout bs-callout-danger">
+                                <h4>
+                                    {{ twit.header }}
+                                </h4>
+                                <p>
+                                    {{ twit.content }}
+                                </p>
+                                <a href="./like={{ twit.id }}?return_url={{ return_url }}?param=param"><img
+                                        src="{% static 'picture/like.png' %}" alt="Mountain View"
+                                        style="width:15px;height:15px;"></a>
+                                <label>{{ twit.liked|length }}</label>
+                            </div>
+                        {% endif %}
+                        {% if twit.hide == 1 and current in user.followers %}
+                            <div class="bs-callout bs-callout-danger">
+                                <h4>
+                                    {{ twit.header }}
+                                </h4>
+                                <p>
+                                    {{ twit.content }}
+                                </p>
+                                <a href="./like={{ twit.id }}?return_url={{ return_url }}?param=param"><img
+                                        src="{% static 'picture/like.png' %}" alt="Mountain View"
+                                        style="width:15px;height:15px;"></a>
+                                <label>{{ twit.liked|length }}</label>
+                            </div>
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
