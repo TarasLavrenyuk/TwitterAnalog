@@ -191,18 +191,22 @@ class Mongo:
         users = db.users
         users.insert_one({'username' : username, 'first_name' : '', 'last_name' : '','email' : '',
                           'photo' : '', 'info' : '', 'followers' : [], 'followings' : [], 'twits' : [],
-                          'date_of_birthday' : '', 'continent' : continent})
+                          'date_of_birthday' : '', 'continent' : continent, 'hide' : 0})
 
     def update_profile(self, request, username):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
         user = users.find_one({ 'username' : username })
+        hide = 0
+        if request.POST.get('is_hide'):
+            hide = 1
         users.update({ 'username' : username }, {'$set':
                                              { 'first_name' : request.POST['firstName'],
                                                'last_name' : request.POST['lastName'],
                                                'email' : request.POST['email'],
                                                'info' : request.POST['info'],
+                                               'hide' : hide,
                                                'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
                                                }})
         new_first_name = request.POST['firstName']
