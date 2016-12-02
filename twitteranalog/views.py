@@ -25,6 +25,7 @@ def welcome(request):
 
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
+    print user.user_permissions
     if user is not None:
         login(request, user)
         username = user.get_username()
@@ -100,6 +101,7 @@ def logout_action(request):
 
 @login_required(redirect_field_name='/')
 def add_twit_view(request):
+    print request.user.get_group_permissions()
     return render(request, 'add_twit.html')
 
 
