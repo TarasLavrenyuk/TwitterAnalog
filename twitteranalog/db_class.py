@@ -16,7 +16,7 @@ def getTags(string):
     for word in words:
         print word
         if word[0] == '#':
-            word = " ".join(re.findall("[a-zA-Z]+", word))
+            word = " ".join(re.findall("[_a-zA-Z]+", word))
             tags.append(word)
     return tags
 
@@ -232,7 +232,7 @@ class Mongo:
                         print 'Clear "users" redis'
                         red.hdel('users', key)
 
-    def add_twit(self, username, header, content, file, hide):
+    def add_twit(self, username, header, content, hide):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users

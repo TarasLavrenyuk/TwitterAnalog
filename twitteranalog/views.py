@@ -9,6 +9,9 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 import uuid
 import re
+from django.shortcuts import render
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 sql = SQL()
 mongo = Mongo()
@@ -103,12 +106,12 @@ def add_twit_view(request):
 @login_required(redirect_field_name='/')
 def add_twit_action(request):
     # print 'File:'
-    # print request._get_files
+    # print request.FILES['my_file']
     hide = 0
     if request.POST.get('is_hide'):
         hide = 1
     username = request.user.get_username()
-    mongo.add_twit(username, request.POST['header'], request.POST['content'], request.POST['file'], hide)
+    mongo.add_twit(username, request.POST['header'], request.POST['content'], hide)
     return HttpResponseRedirect('./my_profile')
 
 
@@ -116,10 +119,10 @@ def add_twit_action(request):
 def user_search(request):
     name = request.GET['name']
     users = mongo.user_search(name)
+    # print users[0]['hide']
     return render(request, 'users.html', {'users': users,
                                           'header': 'Search by "' + name + '"',
-                                          'followings': mongo.get_user_followings_usernames(
-                                              request.user.get_username())})
+                                          'followings': mongo.get_user_followings_usernames(request.user.get_username())})
 
 
 def twit_search(request):
