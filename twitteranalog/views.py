@@ -26,6 +26,8 @@ def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
     if user is not None:
         login(request, user)
+        if user.is_superuser:
+            return HttpResponseRedirect('/admin')
         username = user.get_username()
         user_info = mongo.get_user_info(username)
         url = '/' + str(user_info['_id'])
@@ -43,23 +45,18 @@ def my_profile(request):
 
 @login_required(redirect_field_name='/')
 def profile(request):
-    # if request.user.is_superuser:
-    #     print 'I am superuser!!!'
-    # else:
-    #     print 'I am not superuser!!!'
-
+    blocked_users_usernames = mongo.get_blocked_users_usernames()
     current_username = request.user.get_username()
     line = request.path_info
     id = re.sub('[/]', '', line)
-    # user_info = mongo.get_userinfo_by_twit_id(id)
-    # if user_info:
-    #     url = '/' + str(user_info['_id'])
-    #     return HttpResponseRedirect(url)
     user_info = mongo.get_user_info_by_id(id)
     if user_info:
         twits = reversed(user_info['twits'])
         return render(request, 'profile.html',
-                      {'user': user_info, 'twits': twits, 'current': current_username, 'return_url': request.path})
+                      {'user': user_info, 'twits': twits,
+                       'current': current_username,
+                       'return_url': request.path,
+                       'blocked_users' : blocked_users_usernames,})
     user_info = mongo.get_user_info(id)
     if user_info:
         url = '/' + str(user_info['_id'])
@@ -67,7 +64,11 @@ def profile(request):
     user_info = mongo.get_user_info(str(request.user))
     twits = reversed(user_info['twits'])
     return render(request, 'profile.html',
-                  {'user': user_info, 'twits': twits, 'current': current_username, 'return_url': request.path})
+                  {'user': user_info,
+                   'twits': twits,
+                   'current': current_username,
+                   'return_url': request.path,
+                   'blocked_users' : blocked_users_usernames,})
 
 
 def reg(request):  # view
@@ -189,14 +190,13 @@ def like(request):
 
 def statistics(request):
     online_users = get_online_users()
+    for online_user in online_users:
+        print online_user.get_username()
     last_week_twits = mongo.get_last_week_twits()
     last_month_twits = mongo.get_last_month_twits()
     most_popular_tags = mongo.get_popular_tags()
     most_popular_users = mongo.get_most_popular_users()
     most_active_users = mongo.get_most_active_users()
-    # print most_popular_users['user']
-
-
     return render(request, 'statistics.html', {'online_users': online_users,
                                                'last_week_twits': last_week_twits,
                                                'last_month_twits': last_month_twits,
@@ -212,3 +212,19 @@ def get_online_users():
         data = session.get_decoded()
         uid_list.append(data.get('_auth_user_id', None))
     return User.objects.filter(id__in=uid_list)
+
+
+def admin_page(request):
+    suspicious_users = mongo.get_suspicious_users()
+    blocked_users_usernames = mongo.get_blocked_users_usernames()
+    return render(request, 'users.html', { 'users' : suspicious_users,
+                                           'blocked_users' : blocked_users_usernames,
+                                           'header' : 'Suspicious users'})
+
+
+def blocked_pages(request):
+    blocked_users = mongo.get_blocked_users()
+    blocked_users_usernames = mongo.get_blocked_users_usernames()
+    return render(request, 'users.html', { 'users' : blocked_users,
+                                           'blocked_users' : blocked_users_usernames,
+                                           'header' : 'Blocked users'})

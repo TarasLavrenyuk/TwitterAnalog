@@ -22,7 +22,12 @@
 </head>
 <body>
 
-{% include "./navbar.html" %}
+{% if not request.user.is_superuser %}
+    {% include "./navbar.html" %}
+{% endif %}
+{% if request.user.is_superuser %}
+    {% include "./navbar_admin.html" %}
+{% endif %}
 
 <!-- nav bar -->
 {#    <add padding>#}
@@ -61,7 +66,7 @@
                                         </li>
                                     {% endif %}
                                     {% if current != user.username %}
-                                        {% if user.hide == 0 %}
+                                        {% if user.hide == 0 or request.user.is_superuser %}
                                             <li class="list-group-item"><i class="fa fa-envelope"></i> {{ user.email }}
                                             </li>
                                             <li class="list-group-item">
@@ -78,7 +83,7 @@
                                                     class="fa fa-file-text-o"></i> {{ user.info }}</li>
                                         {% endif %}
                                     {% endif %}
-                                    {% if current != user.username %}
+                                    {% if current != user.username and not request.user.is_superuser %}
                                         {% if current in user.followers %}
                                             <li class="list-group-item">
                                                 <form action="./unfollow" method="get"> {% csrf_token %}
@@ -96,6 +101,22 @@
                                                     </button>
                                                 </form>
                                             </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if request.user.is_superuser %}
+                                        {% if user.username in blocked_users %}
+                                            <form action="./unblock" method="get"> {% csrf_token %}
+                                            <button type="submit" name="user" value="{{ user.username }}"
+                                                    class="btn btn-default">Unblock user
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        {% if user.username not in blocked_users %}
+                                            <form action="./block" method="get"> {% csrf_token %}
+                                            <button type="submit" name="user" value="{{ user.username }}"
+                                                    class="btn btn-default">Block user
+                                            </button>
+                                        </form>
                                         {% endif %}
                                     {% endif %}
                                 </ul>

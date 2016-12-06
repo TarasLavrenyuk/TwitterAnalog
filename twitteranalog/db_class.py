@@ -183,7 +183,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if user['username'] == username:
                 return user
 
@@ -191,7 +191,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        users.insert_one({'username': username, 'first_name': '', 'last_name': '', 'email': '',
+        users.insert_one({'username': username, "role": "user", 'first_name': '', 'last_name': '', 'email': '',
                           'photo': '', 'info': '', 'followers': [], 'followings': [], 'twits': [],
                           'date_of_birthday': '', 'continent': continent, 'hide': 0})
 
@@ -270,9 +270,9 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find({'first_name': re.compile(name, re.IGNORECASE)}):
+        for user in users.find({"role": "user", 'first_name': re.compile(name, re.IGNORECASE)}):
             result.append(user)
-        for user in users.find({'last_name': re.compile(name, re.IGNORECASE)}):
+        for user in users.find({"role": "user", 'last_name': re.compile(name, re.IGNORECASE)}):
             if not self.is_already_in_array(user, result):
                 result.append(user)
         print 'loaded from mongo'
@@ -294,7 +294,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if hashtag in twit['tags']:
                     twit['author'] = user['username']
@@ -308,7 +308,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if str(id) == str(twit['id']):
                     return user
@@ -317,7 +317,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if str(id) == str(user['_id']):
                 return user
 
@@ -326,11 +326,11 @@ class Mongo:
         db = client.twitter
         users = db.users
         print 'i am here'
-        for u in users.find():
+        for u in users.find({"role": "user"}):
             if u['username'] == logged_user:
                 print 'find logged user'
                 users.update_one({'username': logged_user}, {'$push': {'followings': user}})
-        for u in users.find():
+        for u in users.find({"role": "user"}):
             if u['username'] == user:
                 print 'find unlogged user'
                 users.update_one({'username': user}, {'$push': {'followers': logged_user}})
@@ -339,10 +339,10 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for u in users.find():
+        for u in users.find({"role": "user"}):
             if u['username'] == logged_user:
                 users.update_one({'username': logged_user}, {'$pull': {'followings': user}})
-        for u in users.find():
+        for u in users.find({"role": "user"}):
             if u['username'] == user:
                 users.update_one({'username': user}, {'$pull': {'followers': logged_user}})
 
@@ -351,7 +351,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if username == user['username']:
                 for follower in user['followers']:
                     result.append(self.get_user_info(follower))
@@ -362,7 +362,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if username == user['username']:
                 for following in user['followings']:
                     result.append(self.get_user_info(following))
@@ -373,7 +373,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if username == user['username']:
                 for following in user['followings']:
                     result.append(self.get_user_info(following)['username'])
@@ -384,7 +384,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             if user['username'] == username:
                 for following in user['followings']:
                     current_following = self.get_user_info(following)
@@ -399,7 +399,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if str(twit_id) == str(twit['id']):
                     return twit['tags']
@@ -408,7 +408,7 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if str(twit_id) == str(twit['id']):
                     if username in twit['liked']:
@@ -460,7 +460,7 @@ class Mongo:
         db = client.twitter
         users = db.users
         week_ago = datetime.now() - timedelta(days=7)
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if twit['posted_date'] > week_ago:
                     rows.append(twit['posted_date'])
@@ -472,7 +472,7 @@ class Mongo:
         db = client.twitter
         users = db.users
         week_ago = datetime.now() - timedelta(days=30)
-        for user in users.find():
+        for user in users.find({"role": "user"}):
             for twit in user['twits']:
                 if twit['posted_date'] > week_ago:
                     rows.append(twit['posted_date'])
@@ -500,8 +500,36 @@ class Mongo:
             {'$group': {'_id': "$username", 'followers': { "$push": "$followers" }, 'followers_count' : {'$sum': 1 } } },
             {'$sort': {'followers_count': -1}},
             {'$limit' : 5}])
-        print 'Most popular users'
         for row in rows:
-            print row['_id'], row['followers_count']
             result.append({'user' : row['_id'], 'followers_count' : row['followers_count']})
+        return result
+
+    def get_suspicious_users(self):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        admin = users.find_one({"role": "admin"})
+        for suspicious_user in admin['suspicious_users']:
+            result.append(self.get_user_info(suspicious_user))
+        return result
+
+    def get_blocked_users(self):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        admin = users.find_one({"role": "admin"})
+        for suspicious_user in admin['blocked_users']:
+            result.append(self.get_user_info(suspicious_user))
+        return result
+
+    def get_blocked_users_usernames(self):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        admin = users.find_one({"role": "admin"})
+        for suspicious_user in admin['blocked_users']:
+            result.append(self.get_user_info(suspicious_user)['username'])
         return result

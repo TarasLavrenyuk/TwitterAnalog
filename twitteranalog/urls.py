@@ -21,7 +21,8 @@ urlpatterns = (
     url(r'^feed$', views.feed, name='feed'),
     url(r'^like.{0,}$', views.like, name='like'),
     url(r'^statistics$', views.statistics, name='statistics'),
-
+    url(r'^admin$', views.admin_page, name='suspicious_pages'),
+    url(r'^blocked_pages$', views.blocked_pages, name='blocked_pages'),
     url(r'^.{0,}$', views.profile, name='name'),
 
 )

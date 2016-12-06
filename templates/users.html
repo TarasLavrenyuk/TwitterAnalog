@@ -3,8 +3,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {#    <link rel="stylesheet" type="text/css" href="{% static 'css/user_search.css' %}"/>#}
-    {#    <script type="text/javascript" href="{% static 'js/user_search.js' %}"></script>#}
     <link rel="stylesheet" type='text/css' href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -23,7 +21,14 @@
 </head>
 <body>
 
-{% include "./navbar.html" %}
+{% if not request.user.is_superuser %}
+    {% include "./navbar.html" %}
+{% endif %}
+
+{% if request.user.is_superuser %}
+    {% include "./navbar_admin.html" %}
+{% endif %}
+
 
 <div class="page-header">
     <h1 align="center"> {{ header }} </h1>
@@ -55,7 +60,7 @@
                                             <td>Username:</td>
                                             <td>{{ user.username }}</td>
                                         </tr>
-                                        {% if user.hide == 0 %}
+                                        {% if user.hide == 0 or request.user.is_superuser %}
                                             <tr>
                                                 <td>Twits:</td>
                                                 <td>{{ user.twits|length }}</td>
@@ -101,6 +106,18 @@
                                         {% endif %}
                                         </tbody>
                                     </table>
+                                    {% if request.user.is_superuser %}
+                                        <form action="./block" method="get"> {% csrf_token %}
+                                            <button type="submit" name="user" value="{{ user.username }}"
+                                                    class="btn btn-default">Block user
+                                            </button>
+                                        </form>
+                                        <form action="./set_as_reliable" method="get"> {% csrf_token %}
+                                            <button type="submit" name="user" value="{{ user.username }}"
+                                                    class="btn btn-default">Set user as reliable
+                                            </button>
+                                        </form>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
