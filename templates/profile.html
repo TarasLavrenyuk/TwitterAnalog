@@ -22,15 +22,18 @@
 </head>
 <body>
 
-{% if not request.user.is_superuser %}
-    {% include "./navbar.html" %}
-{% endif %}
 {% if request.user.is_superuser %}
     {% include "./navbar_admin.html" %}
 {% endif %}
+{% if not request.user.is_superuser %}
+    {% include "./navbar.html" %}
+{% endif %}
 
-<!-- nav bar -->
-{#    <add padding>#}
+{% if user.blocked == 1 %}
+    <h1> This page is blocked by admin </h1>
+{% endif %}
+
+{% if user.blocked == 0 or request.user.is_superuser %}
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
@@ -102,6 +105,13 @@
                                                 </form>
                                             </li>
                                         {% endif %}
+                                         <li class="list-group-item">
+                                                <form action="./report?{{ return_url }}" method="get"> {% csrf_token %}
+                                                    <button type="submit" name="user" value="{{ user.username }}"
+                                                            class="btn btn-default">Report
+                                                    </button>
+                                                </form>
+                                            </li>
                                     {% endif %}
                                     {% if request.user.is_superuser %}
                                         {% if user.username in blocked_users %}
@@ -140,7 +150,7 @@
                         </div>
                     {% endif %}
                     {% if current != user.username %}
-                        {% if twit.hide == 0 %}
+                        {% if twit.hide == 0 or request.user.is_superuser %}
                             <div class="bs-callout bs-callout-danger">
                                 <h4>
                                     {{ twit.header }}
@@ -174,6 +184,8 @@
         </div>
     </div>
 </div>
+{% endif %}
+
 
 </body>
 </html>

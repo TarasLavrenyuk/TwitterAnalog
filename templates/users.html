@@ -107,11 +107,20 @@
                                         </tbody>
                                     </table>
                                     {% if request.user.is_superuser %}
-                                        <form action="./block" method="get"> {% csrf_token %}
+                                        {% if user.username in blocked_users %}
+                                            <form action="./unblock" method="get"> {% csrf_token %}
+                                            <button type="submit" name="user" value="{{ user.username }}"
+                                                    class="btn btn-default">Unblock user
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        {% if user.username not in blocked_users %}
+                                            <form action="./block" method="get"> {% csrf_token %}
                                             <button type="submit" name="user" value="{{ user.username }}"
                                                     class="btn btn-default">Block user
                                             </button>
                                         </form>
+                                        {% endif %}
                                         <form action="./set_as_reliable" method="get"> {% csrf_token %}
                                             <button type="submit" name="user" value="{{ user.username }}"
                                                     class="btn btn-default">Set user as reliable

@@ -228,3 +228,23 @@ def blocked_pages(request):
     return render(request, 'users.html', { 'users' : blocked_users,
                                            'blocked_users' : blocked_users_usernames,
                                            'header' : 'Blocked users'})
+
+
+def block_user(request):
+    mongo.block_user(request.GET['user'])
+    return HttpResponseRedirect('/admin')
+
+
+def unblock_user(request):
+    mongo.unblock_user(request.GET['user'])
+    return HttpResponseRedirect('/admin')
+
+
+def set_as_reliable(request):
+    mongo.set_user_as_reliable(request.GET['user'])
+    return HttpResponseRedirect('/admin')
+
+
+def report(request):
+    mongo.report(request.GET['user'])
+    return HttpResponseRedirect(request.GET['user'])

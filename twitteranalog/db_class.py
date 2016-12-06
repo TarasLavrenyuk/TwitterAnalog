@@ -533,3 +533,33 @@ class Mongo:
         for suspicious_user in admin['blocked_users']:
             result.append(self.get_user_info(suspicious_user)['username'])
         return result
+
+    def block_user(self, username):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        users.update({'username': username}, {'$set': {'blocked' : 1 }})
+        users.update({'role' : 'admin'}, {'$push': {'blocked_users' : username }})
+        if username in users.find_one({'role' : 'admin'})['suspicious_users']:
+            users.update({'role' : 'admin'}, {'$pull': {'suspicious_users' : username }})
+
+    def unblock_user(self, username):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        users.update({'username': username}, {'$set': {'blocked' : 0 }})
+        users.update({'role' : 'admin'}, {'$pull': {'blocked_users' : username }})
+
+    def set_user_as_reliable(self, username):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        users.update({'role' : 'admin'}, {'$pull': {'suspicious_users' : username }})
+
+    def report(self, username):
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        if username not in users.find_one({'role' : 'admin'})['suspicious_users']:
+            users.update({'role' : 'admin'}, {'$push': {'suspicious_users' : username }})
+

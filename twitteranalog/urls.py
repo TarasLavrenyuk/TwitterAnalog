@@ -22,7 +22,11 @@ urlpatterns = (
     url(r'^like.{0,}$', views.like, name='like'),
     url(r'^statistics$', views.statistics, name='statistics'),
     url(r'^admin$', views.admin_page, name='suspicious_pages'),
-    url(r'^blocked_pages$', views.blocked_pages, name='blocked_pages'),
+    url(r'^see_blocked_users$', views.blocked_pages, name='blocked_pages'),
+    url(r'^block$', views.block_user, name='block_user'),
+    url(r'^unblock$', views.unblock_user, name='unblock_user'),
+    url(r'^set_as_reliable$', views.set_as_reliable, name='set_as_reliable'),
+    url(r'^report.{0,}$', views.report, name='report'),
     url(r'^.{0,}$', views.profile, name='name'),
 
 )
