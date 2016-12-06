@@ -1,7 +1,7 @@
 import sys
 import MySQLdb as mydb
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import uuid
 from operator import itemgetter
@@ -16,7 +16,6 @@ def getTags(string):
     tags = []
     words = string.split()
     for word in words:
-        print word
         if word[0] == '#':
             word = " ".join(re.findall("[_a-zA-Z]+", word))
             tags.append(word)
@@ -32,17 +31,14 @@ class SQL:
     def isLogin(self, request):
         con = None
 
-        print 'I am in Login class'
         user_id = 0
         try:
             con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT * FROM users""")
             users = cur.fetchall()
-            print users
             for user in users:
                 if str(user[1]) == str(request.POST["username"]) and str(user[2]) == str(request.POST["password"]):
-                    print user
                     user_id = int(user[0])
         except mydb.Error, e:
 
@@ -423,7 +419,6 @@ class Mongo:
                                          {'$push': {'twits.$.liked': username}})
 
         hash_data = red.hgetall('twits')
-        print hash_data
         if hash_data:
             keys = hash_data.keys()
             for key in keys:
@@ -457,4 +452,56 @@ class Mongo:
 
         for element in result.find().sort('value', -1).limit(10):
             rows.append({'tag': element['_id'], 'value': int(element['value'])})
+        return rows
+
+    def get_last_week_twits(self):
+        rows = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        week_ago = datetime.now() - timedelta(days=7)
+        for user in users.find():
+            for twit in user['twits']:
+                if twit['posted_date'] > week_ago:
+                    rows.append(twit['posted_date'])
+        return len(rows)
+
+    def get_last_month_twits(self):
+        rows = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        users = db.users
+        week_ago = datetime.now() - timedelta(days=30)
+        for user in users.find():
+            for twit in user['twits']:
+                if twit['posted_date'] > week_ago:
+                    rows.append(twit['posted_date'])
+        return len(rows)
+
+    def get_most_active_users(self):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        rows = db.users.aggregate([
+            { "$unwind": "$twits" },
+            {'$group': {'_id': "$username", 'twits': { "$push": "$twits" }, 'twit_count' : {'$sum': 1 } } },
+            {'$sort': {'twit_count': -1}},
+            {'$limit' : 5}])
+        for row in rows:
+            result.append({'user' : row['_id'], 'twits_count' : row['twit_count']})
+        return rows
+
+    def get_most_popular_users(self):
+        result = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+        rows = db.users.aggregate([
+            { "$unwind": "$followers" },
+            {'$group': {'_id': "$username", 'followers': { "$push": "$followers" }, 'followers_count' : {'$sum': 1 } } },
+            {'$sort': {'followers_count': -1}},
+            {'$limit' : 5}])
+        print 'Most popular users'
+        for row in rows:
+            print row['_id'], row['followers_count']
+            result.append({'user' : row['_id'], 'followers_count' : row['followers_count']})
         return rows
