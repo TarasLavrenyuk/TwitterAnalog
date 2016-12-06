@@ -20,6 +20,8 @@ urlpatterns = (
     url(r'^followings=.{0,}$', views.view_followings, name='view_followings'),
     url(r'^feed$', views.feed, name='feed'),
     url(r'^like.{0,}$', views.like, name='like'),
+    url(r'^statistics$', views.statistics, name='statistics'),
+
     url(r'^.{0,}$', views.profile, name='name'),
 
 )

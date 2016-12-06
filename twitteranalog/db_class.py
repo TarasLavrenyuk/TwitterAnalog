@@ -7,8 +7,10 @@ import uuid
 from operator import itemgetter
 import redis
 import pickle
+from bson.code import Code
 
 red = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 
 def getTags(string):
     tags = []
@@ -20,12 +22,12 @@ def getTags(string):
             tags.append(word)
     return tags
 
+
 class SQL:
     host = 'localhost'
     db_user_name = 'root'
     password = '852456aaa'
     db_name = 'twitter'
-
 
     def isLogin(self, request):
         con = None
@@ -33,7 +35,7 @@ class SQL:
         print 'I am in Login class'
         user_id = 0
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT * FROM users""")
             users = cur.fetchall()
@@ -44,7 +46,7 @@ class SQL:
                     user_id = int(user[0])
         except mydb.Error, e:
 
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
 
         finally:
@@ -56,12 +58,12 @@ class SQL:
         con = None
         username = request.POST["username"]
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT user_name FROM users;""");
             users = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
@@ -84,7 +86,7 @@ class SQL:
         print inserted_password
 
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
 
             cur.execute("""INSERT INTO users(user_name, password, role, country) VALUES (%s, %s, %s, %s);""",
@@ -93,7 +95,7 @@ class SQL:
 
         except mydb.Error, e:
 
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
 
         finally:
@@ -103,12 +105,12 @@ class SQL:
     def getUsername(self, id):
         con = None
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT user_name FROM users WHERE id=%s;""", id);
             result = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
@@ -118,12 +120,14 @@ class SQL:
     def getUserContinent(self, id):
         con = None
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
-            cur.execute("""SELECT continent.id FROM users JOIN countries ON users.country=countries.id JOIN continent ON countries.continent_id=continent.id WHERE users.id=%s;""", str(id));
+            cur.execute(
+                """SELECT continent.id FROM users JOIN countries ON users.country=countries.id JOIN continent ON countries.continent_id=continent.id WHERE users.id=%s;""",
+                str(id));
             result = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
@@ -133,12 +137,14 @@ class SQL:
     def getUserCountry(self, id):
         con = None
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
-            cur.execute("""SELECT countries.name FROM users JOIN countries ON users.country=countries.id WHERE users.id=%s;""", id);
+            cur.execute(
+                """SELECT countries.name FROM users JOIN countries ON users.country=countries.id WHERE users.id=%s;""",
+                id);
             result = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
@@ -148,12 +154,12 @@ class SQL:
     def getCountries(self):
         con = None
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT id, name FROM countries""")
             countries = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
@@ -163,20 +169,20 @@ class SQL:
     def getContinents(self):
         con = None
         try:
-            con = mydb.connect( self.host, self.db_user_name, self.password, self.db_name);
+            con = mydb.connect(self.host, self.db_user_name, self.password, self.db_name);
             cur = con.cursor()
             cur.execute("""SELECT id, name FROM continent""")
             continents = cur.fetchall()
         except mydb.Error, e:
-            print "Error %d: %s" % (e.args[0],e.args[1])
+            print "Error %d: %s" % (e.args[0], e.args[1])
             sys.exit(1)
         finally:
             if con:
                 con.close()
         return continents
 
-class Mongo:
 
+class Mongo:
     def get_user_info(self, username):
         client = MongoClient('localhost', 27017)
         db = client.twitter
@@ -189,26 +195,27 @@ class Mongo:
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        users.insert_one({'username' : username, 'first_name' : '', 'last_name' : '','email' : '',
-                          'photo' : '', 'info' : '', 'followers' : [], 'followings' : [], 'twits' : [],
-                          'date_of_birthday' : '', 'continent' : continent, 'hide' : 0})
+        users.insert_one({'username': username, 'first_name': '', 'last_name': '', 'email': '',
+                          'photo': '', 'info': '', 'followers': [], 'followings': [], 'twits': [],
+                          'date_of_birthday': '', 'continent': continent, 'hide': 0})
 
     def update_profile(self, request, username):
         client = MongoClient('localhost', 27017)
         db = client.twitter
         users = db.users
-        user = users.find_one({ 'username' : username })
+        user = users.find_one({'username': username})
         hide = 0
         if request.POST.get('is_hide'):
             hide = 1
-        users.update({ 'username' : username }, {'$set':
-                                             { 'first_name' : request.POST['firstName'],
-                                               'last_name' : request.POST['lastName'],
-                                               'email' : request.POST['email'],
-                                               'info' : request.POST['info'],
-                                               'hide' : hide,
-                                               'date_of_birthday' : datetime.strptime(request.POST['birthday'], '%Y-%m-%d'),
-                                               }})
+        users.update({'username': username}, {'$set':
+                                                  {'first_name': request.POST['firstName'],
+                                                   'last_name': request.POST['lastName'],
+                                                   'email': request.POST['email'],
+                                                   'info': request.POST['info'],
+                                                   'hide': hide,
+                                                   'date_of_birthday': datetime.strptime(request.POST['birthday'],
+                                                                                         '%Y-%m-%d'),
+                                                   }})
         new_first_name = request.POST['firstName']
         new_last_name = request.POST['lastName']
         prev_first_name = user.get('first_name')
@@ -240,14 +247,14 @@ class Mongo:
         tags = getTags(content)
         id = uuid.uuid1()
         twit = {'id': id,
-                'header' : header,
-                'content' : content,
-                'posted_date' : posted_date,
-                'liked' : [],
-                'tags' : tags,
-                'hide' : hide
+                'header': header,
+                'content': content,
+                'posted_date': posted_date,
+                'liked': [],
+                'tags': tags,
+                'hide': hide
                 }
-        users.update({ 'username' : username }, {'$push': { 'twits': twit}})
+        users.update({'username': username}, {'$push': {'twits': twit}})
 
         hash_data = red.hgetall('twits')
         print hash_data
@@ -326,11 +333,11 @@ class Mongo:
         for u in users.find():
             if u['username'] == logged_user:
                 print 'find logged user'
-                users.update_one({ 'username' : logged_user }, {'$push': { 'followings': user}})
+                users.update_one({'username': logged_user}, {'$push': {'followings': user}})
         for u in users.find():
             if u['username'] == user:
                 print 'find unlogged user'
-                users.update_one({ 'username' : user }, {'$push': { 'followers': logged_user}})
+                users.update_one({'username': user}, {'$push': {'followers': logged_user}})
 
     def unfollow(self, logged_user, user):
         client = MongoClient('localhost', 27017)
@@ -338,10 +345,10 @@ class Mongo:
         users = db.users
         for u in users.find():
             if u['username'] == logged_user:
-                users.update_one({ 'username' : logged_user }, {'$pull': { 'followings': user}})
+                users.update_one({'username': logged_user}, {'$pull': {'followings': user}})
         for u in users.find():
             if u['username'] == user:
-                users.update_one({ 'username' : user }, {'$pull': { 'followers': logged_user}})
+                users.update_one({'username': user}, {'$pull': {'followers': logged_user}})
 
     def get_user_followers(self, username):
         result = []
@@ -409,9 +416,11 @@ class Mongo:
             for twit in user['twits']:
                 if str(twit_id) == str(twit['id']):
                     if username in twit['liked']:
-                        users.update({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$pull': { 'twits.$.liked': username }})
+                        users.update({'username': user['username'], 'twits.id': twit['id']},
+                                     {'$pull': {'twits.$.liked': username}})
                     else:
-                        users.update_one({ 'username' : user['username'], 'twits.id' : twit['id'] }, {'$push': { 'twits.$.liked': username }})
+                        users.update_one({'username': user['username'], 'twits.id': twit['id']},
+                                         {'$push': {'twits.$.liked': username}})
 
         hash_data = red.hgetall('twits')
         print hash_data
@@ -421,3 +430,34 @@ class Mongo:
                 if key in self.get_twit_tags_by_id(twit_id):
                     print 'Clear "twits" redis'
                     red.hdel('twits', key)
+
+    def get_popular_tags(self):
+        rows = []
+        client = MongoClient('localhost', 27017)
+        db = client.twitter
+
+        map = Code( "function map(){"
+                        "for(var i = 0; i < this.twits.length; i++) {"
+                            "for(var j = 0; j < this.twits[i].tags.length; j++) {"
+                                "key = this.twits[i].tags[j];"
+                                "value = 1;"
+                                "emit(key, value);"
+                                "}"
+                            "}"
+                        "}")
+        reduce = Code(  "function reduce(key, values) {"
+	                        "var sum = 0;"
+	                        "for(var i in values) {"
+		                        "sum += values[i];"
+	                            "}"
+	                        "return sum;"
+                        "}")
+
+        result = db.users.map_reduce(map, reduce, "tags")
+
+        for element in result.find():
+            rows.append({'tag': element['_id'], 'value': int(element['value'])})
+
+        for row in rows:
+            print row
+        # return rows

@@ -1,17 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from .db_class import SQL
-from .db_class import Mongo
-from django.contrib.auth.models import User
-from models import Extra
+import re
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-import uuid
-import re
+from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.utils import timezone
+
+from models import Extra
+from .db_class import Mongo
+from .db_class import SQL
 
 sql = SQL()
 mongo = Mongo()
@@ -25,7 +24,6 @@ def welcome(request):
 
 def sign_in(request):
     user = authenticate(username=request.POST["username"], password=request.POST["password"])
-    print user.user_permissions
     if user is not None:
         login(request, user)
         username = user.get_username()
@@ -45,6 +43,11 @@ def my_profile(request):
 
 @login_required(redirect_field_name='/')
 def profile(request):
+    # if request.user.is_superuser:
+    #     print 'I am superuser!!!'
+    # else:
+    #     print 'I am not superuser!!!'
+
     current_username = request.user.get_username()
     line = request.path_info
     id = re.sub('[/]', '', line)
@@ -182,3 +185,19 @@ def like(request):
     print twit_id
     mongo.like(twit_id, request.user.get_username())
     return HttpResponseRedirect(request.GET['return_url'])
+
+
+def statistics(request):
+    online_users = get_online_users()
+    popular_tags = mongo.get_popular_tags()
+
+    print len(online_users)
+    return HttpResponseRedirect('/')
+
+def get_online_users():
+    sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    uid_list = []
+    for session in sessions:
+        data = session.get_decoded()
+        uid_list.append(data.get('_auth_user_id', None))
+    return User.objects.filter(id__in=uid_list)
