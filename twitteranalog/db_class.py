@@ -455,9 +455,6 @@ class Mongo:
 
         result = db.users.map_reduce(map, reduce, "tags")
 
-        for element in result.find():
+        for element in result.find().sort('value', -1).limit(10):
             rows.append({'tag': element['_id'], 'value': int(element['value'])})
-
-        for row in rows:
-            print row
-        # return rows
+        return rows
