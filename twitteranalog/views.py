@@ -189,13 +189,20 @@ def like(request):
 
 def statistics(request):
     online_users = get_online_users()
-    popular_tags = mongo.get_popular_tags()
     last_week_twits = mongo.get_last_week_twits()
     last_month_twits = mongo.get_last_month_twits()
-    most_active_users = mongo.get_most_active_users()
+    most_popular_tags = mongo.get_popular_tags()
     most_popular_users = mongo.get_most_popular_users()
+    most_active_users = mongo.get_most_active_users()
+    # print most_popular_users['user']
 
-    return HttpResponseRedirect('/')
+
+    return render(request, 'statistics.html', {'online_users': online_users,
+                                               'last_week_twits': last_week_twits,
+                                               'last_month_twits': last_month_twits,
+                                               'most_popular_tags': most_popular_tags,
+                                               'most_active_users': most_active_users,
+                                               'most_popular_users' : most_popular_users})
 
 
 def get_online_users():

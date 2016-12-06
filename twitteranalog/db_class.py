@@ -489,7 +489,7 @@ class Mongo:
             {'$limit' : 5}])
         for row in rows:
             result.append({'user' : row['_id'], 'twits_count' : row['twit_count']})
-        return rows
+        return result
 
     def get_most_popular_users(self):
         result = []
@@ -504,4 +504,4 @@ class Mongo:
         for row in rows:
             print row['_id'], row['followers_count']
             result.append({'user' : row['_id'], 'followers_count' : row['followers_count']})
-        return rows
+        return result

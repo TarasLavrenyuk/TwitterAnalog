@@ -1,0 +1,105 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}"/>
+    <link rel="stylesheet" type='text/css' href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type='text/css'
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <title> Statistics </title>
+</head>
+<body>
+
+{% include "./navbar.html" %}
+
+<div class="container">
+
+    <h1 align="center">Statistics of the site</h1>
+
+    <p> <h3 style="color: #767676"> Users online: {{ online_users|length }} </h3>
+    <p> <h3 style="color: #767676"> Count of twits during last week : {{ last_week_twits }} </h3>
+    <p> <h3 style="color: #767676"> Count of twits during last month : {{ last_month_twits }} </h3>
+
+    <div>
+        <table class="table table-hover table-bordered table-responsive">
+            <caption>
+                <h3 style="color: #333333"> The most popular tags </h3>
+            </caption>
+            <thead>
+                <th>№</th>
+                <th>Tag</th>
+                <th>Count</th>
+            </thead>
+            <tbody>
+            {% for tag in most_popular_tags %}
+                <tr>
+                    <td> {{ forloop.counter }} </td>
+                    <td> {{ tag.tag }} </td>
+                    <td> {{ tag.value}} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <table class="table table-hover table-bordered table-responsive">
+            <caption>
+                <h3 style="color: #333333"> The most popular users </h3>
+            </caption>
+            <thead>
+                <th>№</th>
+                <th>User</th>
+                <th>Count of followers</th>
+            </thead>
+            <tbody>
+            {% for user in most_popular_users %}
+                <tr>
+                    <td> {{ forloop.counter }} </td>
+                    <td> <a href="{{ user.user }}"> @{{ user.user }} </a> </td>
+                    <td> {{ user.followers_count }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+<div>
+        <table class="table table-hover table-bordered table-responsive">
+            <caption>
+                <h3 style="color: #333333"> The most active users </h3>
+            </caption>
+            <thead>
+                <th>№</th>
+                <th>User</th>
+                <th>Count of twits</th>
+            </thead>
+            <tbody>
+            {% for user in most_active_users %}
+                <tr>
+                    <td> {{ forloop.counter }} </td>
+                    <td> <a href="{{ user.user }}"> @{{ user.user }} </a> </td>
+                    <td> {{ user.twits_count }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
