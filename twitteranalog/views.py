@@ -37,6 +37,8 @@ def sign_in(request):
 
 
 def my_profile(request):
+    if request.user.is_superuser:
+        return HttpResponseRedirect('/admin')
     username = request.user.get_username()
     user_info = mongo.get_user_info(username)
     url = '/' + str(user_info['_id'])
@@ -186,6 +188,17 @@ def like(request):
     print twit_id
     mongo.like(twit_id, request.user.get_username())
     return HttpResponseRedirect(request.GET['return_url'])
+
+
+def fill_in_db():
+    i = 1
+    while i <= 20000:
+        email = 'email' + str(i)
+        new_user = User.objects.create_user("user" + str(i), email, "123")
+        cont = i % 6
+        Extra(continent=i, user=new_user).save()
+        mongo.random_user(new_user.get_username(), cont, email)
+        i += 1
 
 
 def statistics(request):

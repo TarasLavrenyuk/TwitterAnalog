@@ -25,12 +25,18 @@
 {% if request.user.is_superuser %}
     {% include "./navbar_admin.html" %}
 {% endif %}
-{% if not request.user.is_superuser %}
+{% if current != user.username %}
+    {% include "./navbar.html" %}
+{% endif %}
+{% if not request.user.is_superuser and user.blocked == 0 and current == user.username %}
     {% include "./navbar.html" %}
 {% endif %}
 
 {% if user.blocked == 1 %}
-    <h1> This page is blocked by admin </h1>
+    <div class="container">
+        <h1> This page is blocked by admin </h1>
+        <h1><a href="./logout">Logout</a></h1>
+    </div>
 {% endif %}
 
 {% if user.blocked == 0 or request.user.is_superuser %}
